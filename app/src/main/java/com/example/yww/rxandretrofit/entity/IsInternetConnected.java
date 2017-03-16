@@ -1,4 +1,4 @@
-package com.example.yww.rxandretrofit;
+package com.example.yww.rxandretrofit.entity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,6 +13,8 @@ import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.widget.TextView;
+
+import com.example.yww.rxandretrofit.R;
 
 import java.util.List;
 

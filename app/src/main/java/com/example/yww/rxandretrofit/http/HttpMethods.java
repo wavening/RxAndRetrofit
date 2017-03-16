@@ -1,6 +1,10 @@
-package com.example.yww.rxandretrofit;
+package com.example.yww.rxandretrofit.http;
 
-import android.icu.util.TimeUnit;
+import com.example.yww.rxandretrofit.entity.MovieEntity;
+import com.example.yww.rxandretrofit.entity.MovieService;
+import com.example.yww.rxandretrofit.entity.Subject;
+
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -51,8 +55,8 @@ public class HttpMethods {
      * @param start 起始位置
      * @param count 获取长度
      */
-    public void getTopMovie(Subscriber<MovieEntity> subscriber,int start,int count){
-        movieService.getTopMovie(start,count)
+    public void getTopMovie(Subscriber<HttpResult<List<Subject>>> subscriber, int start, int count){
+        movieService.getTopMovie(start, count)
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
