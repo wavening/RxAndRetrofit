@@ -14,6 +14,7 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.internal.http.HttpMethod;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,6 +41,7 @@ private static final String TAG ="";
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+
     }
 private static String ToastInternetMessage = "网络连接成功";
     @Override
@@ -61,9 +63,11 @@ private static String ToastInternetMessage = "网络连接成功";
         }
     }
 
+    private Subscriber<MovieEntity> subscriber;
+
     //进行网络请求
     private void getMovie(){
-        String baseUrl = "https://api.douban.com/v2/movie/";
+       /* String baseUrl = "https://api.douban.com/v2/movie/";
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
@@ -71,7 +75,7 @@ private static String ToastInternetMessage = "网络连接成功";
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
 
-        MovieService movieService = retrofit.create(MovieService.class);
+        MovieService movieService = retrofit.create(MovieService.class);*/
        /* Call<MovieEntity> call = movieService.getTopMovie(0, 10);
         call.enqueue(new Callback<MovieEntity>() {
             @Override
@@ -85,7 +89,7 @@ private static String ToastInternetMessage = "网络连接成功";
             }
         });*/
 
-       movieService.getTopMovie(0,10)
+       /*movieService.getTopMovie(0,10)
                .subscribeOn(Schedulers.io())
                .observeOn(AndroidSchedulers.mainThread())
                .subscribe(new Subscriber<MovieEntity>() {
@@ -103,6 +107,24 @@ private static String ToastInternetMessage = "网络连接成功";
                    public void onNext(MovieEntity movieEntity) {
                        resultTV.setText(movieEntity.toString());
                    }
-               });
+               });*/
+
+       subscriber = new Subscriber<MovieEntity>() {
+           @Override
+           public void onCompleted() {
+               Toast.makeText(MainActivity.this,"Get Top Movie Completed!",Toast.LENGTH_SHORT).show();
+           }
+
+           @Override
+           public void onError(Throwable e) {
+               resultTV.setText(e.getMessage());
+           }
+
+           @Override
+           public void onNext(MovieEntity movieEntity) {
+               resultTV.setText(movieEntity.toString());
+           }
+       };
+        HttpMethods.getInstance().getTopMovie(subscriber, 0, 10);
     }
 }
