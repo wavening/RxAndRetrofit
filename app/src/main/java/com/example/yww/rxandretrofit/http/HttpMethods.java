@@ -3,6 +3,7 @@ package com.example.yww.rxandretrofit.http;
 import com.example.yww.rxandretrofit.entity.MovieEntity;
 import com.example.yww.rxandretrofit.entity.MovieService;
 import com.example.yww.rxandretrofit.entity.Subject;
+import com.example.yww.rxandretrofit.gsonResponse.ResponseConvertFactory;
 
 import java.util.List;
 
@@ -35,8 +36,11 @@ public class HttpMethods {
 
         retrofit = new Retrofit.Builder()
                 .client(httpClientbuilder.build())
-                .addConverterFactory(GsonConverterFactory.create())
+       // 对http请求结果进行统一的预处理 GosnResponseBodyConvert
+//                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(ResponseConvertFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+
                 .baseUrl(BASE_URL)
                 .build();
         movieService = retrofit.create(MovieService.class);

@@ -5,7 +5,7 @@ package com.example.yww.rxandretrofit.http;
  */
 
 public class ApiException extends RuntimeException{
-    public static final int USER_NOE_EXIST = 100;
+    public static final int USER_NOT_EXIST = 100;
     public static final int WRONG_PASSWORD = 101;
 
     public ApiException(int resultCode){
@@ -24,7 +24,7 @@ public class ApiException extends RuntimeException{
     private static String GetApiExceptionMessage(int code){
         String message ="";
         switch (code){
-            case USER_NOE_EXIST:
+            case USER_NOT_EXIST:
                 message ="该用户不存在";
                 break;
             case WRONG_PASSWORD:
