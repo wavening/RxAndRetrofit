@@ -13,6 +13,8 @@ import com.example.yww.rxandretrofit.entity.IsInternetConnected;
 import com.example.yww.rxandretrofit.entity.MovieEntity;
 import com.example.yww.rxandretrofit.R;
 import com.example.yww.rxandretrofit.http.HttpResult;
+import com.example.yww.rxandretrofit.subscribers.ProgressSubscriber;
+import com.example.yww.rxandretrofit.subscribers.SubscriberOnNextListener;
 
 import java.util.List;
 
@@ -28,16 +30,31 @@ private static final String TAG ="";
     @BindView(R.id.result_TV)
     TextView resultTV;
 
-
+// private Subscriber subscriber;
+    /**
+     * 不要用Activity直接实现这个接口，
+     * 因为在一个Activity或者Fragment中，可能会发出多个请求
+     */
+    private SubscriberOnNextListener getTopMovieOnNext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+//后添加
+getTopMovieOnNext = new SubscriberOnNextListener<List<Subject>>() {
+    @Override
+    public void onNext(List<Subject> subjects) {
+        resultTV.setText(subjects.toString());
+    }
 
+};
 
     }
+
+
+
 private static String ToastInternetMessage = "网络连接成功";
     @Override
     protected void onStart() {
@@ -45,6 +62,11 @@ private static String ToastInternetMessage = "网络连接成功";
        boolean getInternetB = IsInternetConnected.isNetworkAvalible(MainActivity.this);
         if (getInternetB = true){Toast.makeText(MainActivity.this,ToastInternetMessage,Toast.LENGTH_SHORT).show();}
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     @OnClick({R.id.click_me_BTN, R.id.result_TV})
@@ -58,7 +80,7 @@ private static String ToastInternetMessage = "网络连接成功";
         }
     }
 
-    private Subscriber subscriber;
+
 
     //进行网络请求
     private void getMovie(){
@@ -103,7 +125,9 @@ private static String ToastInternetMessage = "网络连接成功";
 //                        resultTV.setText(movieEntity.toString());
 //                    }
 //                });
-        subscriber = new Subscriber<HttpResult<List<Subject>>>() {
+
+        /**
+         * subscriber = new Subscriber<HttpResult<List<Subject>>>() {
             @Override
             public void onCompleted() {
                 Toast.makeText(MainActivity.this, "Get Top Movie Completed", Toast.LENGTH_SHORT).show();
@@ -120,5 +144,9 @@ private static String ToastInternetMessage = "网络连接成功";
             }
         };
         HttpMethods.getInstance().getTopMovie(subscriber, 0, 10);
+         */
+
+        HttpMethods.getInstance()
+                .getTopMovie(new ProgressSubscriber(getTopMovieOnNext,MainActivity.this),0,10);
     }
 }

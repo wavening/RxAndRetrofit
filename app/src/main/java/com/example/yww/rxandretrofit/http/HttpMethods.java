@@ -30,11 +30,11 @@ public class HttpMethods {
     //构造方法私有
     private HttpMethods(){
         //手动创建一个OkHttpClient并设置超时时间
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.connectTimeout(DEFAULT_TIMEOUT, java.util.concurrent.TimeUnit.SECONDS);
+        OkHttpClient.Builder httpClientbuilder = new OkHttpClient.Builder();
+        httpClientbuilder.connectTimeout(DEFAULT_TIMEOUT, java.util.concurrent.TimeUnit.SECONDS);
 
         retrofit = new Retrofit.Builder()
-                .client(builder.build())
+                .client(httpClientbuilder.build())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .baseUrl(BASE_URL)
@@ -57,15 +57,17 @@ public class HttpMethods {
      * @param start 起始位置
      * @param count 获取长度
      */
-    /*public void getTopMovie(Subscriber<HttpResult<List<Subject>>> subscriber, int start, int count){
+    public void getTopMovie(Subscriber<List<Subject>> subscriber, int start, int count){
         movieService.getTopMovie(start, count)
+                .map(new HttpResultFunc<List<Subject>>())
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
-    }*/
+    }
 
-    public void getTopMovie(Subscriber<List<Subject>> subscriber,int start,int count){
+    /**
+     * public void getTopMovie(Subscriber<List<Subject>> subscriber,int start,int count){
         movieService.getTopMovie(0,10)
                 .flatMap(new Func1<HttpResult<List<Subject>>, Observable<List<Subject>>>() {
                     @Override
@@ -78,7 +80,14 @@ public class HttpMethods {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
 
-    }
+    }*/
+    /**
+     * 用来统一处理Http的ResultCode
+     * @param result   Http请求返回的数据，用过HttpResult进行了封装
+     * @param <T>   Subscriber真正需要的数据类型，也就是Data部分的数据类型
+     * @return
+     */
+    /**
     static <T> Observable<T> flatResult(final HttpResult<T> result) {
         return Observable.create(new Observable.OnSubscribe<T>() {
             @Override
@@ -94,4 +103,32 @@ public class HttpMethods {
             }
         });
     }
+    */
+    /**
+     * 用来统一处理Http的resultCode,并将HttpResult的Data部分剥离出来返回给subscriber
+     *
+     * @param <T>   Subscriber真正需要的数据类型，也就是Data部分的数据类型
+     */
+    private class HttpResultFunc<T> implements Func1<HttpResult<T>, T>{
+
+        @Override
+        public T call(HttpResult<T> httpResult) {
+            if (httpResult.getCount() == 0) {
+                throw new ApiException(100);
+            }
+            return httpResult.getSubjects();
+        }
+    }
+   /**
+   private class HttpResultFunc<T> implements Func1<HttpResult<T>, T>{
+
+        @Override
+        public T call(HttpResult<T> httpResult) {
+            if (httpResult.getCount() == 0) {
+                throw new ApiException(100);
+            }
+            return httpResult.getSubjects();
+        }
+    }*/
+
 }

@@ -4,7 +4,7 @@ package com.example.yww.rxandretrofit.http;
  * Created by Cherry123 on 2017/3/16.
  */
 
-public class ApiException extends Exception{
+public class ApiException extends RuntimeException{
     public static final int USER_NOE_EXIST = 100;
     public static final int WRONG_PASSWORD = 101;
 
